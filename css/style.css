@@ -1,0 +1,665 @@
+/*
+ * Gigcall public site — one stylesheet, no build step, no external requests.
+ *
+ * Brand: the "Spotlight g" app icon (app/README.md, "App icon and launch
+ * screen"; site/img/favicon.svg is the same picture). Five colours, named for
+ * what they are in the icon:
+ *
+ *   --deep   #2b0b5e  the field: the darkest purple, the hero and the logo plate
+ *   --beam   #4a1c88  the stage spotlight's beam
+ *   --pool   #5e2ca5  the pool of light it throws on the floor
+ *   --spot   #ffe14d  spotlight yellow: the lamp and the g
+ *   --spark  #ff3d7f  sparkle pink: the four-point sparkle
+ *
+ * Contrast (WCAG AA, 4.5:1 for text, 3:1 for large text and graphics). The
+ * rules the palette follows; scripts/tests/test_site_brand.sh reads the custom
+ * properties below, measures every pair, and fails on a break of any of them:
+ *   - body text is a near-black purple on near-white (light) or near-white on a
+ *     near-black purple (dark), never a brand colour: plain, high contrast,
+ *     which is what the legal pages need;
+ *   - yellow is for the dark scheme's links and for buttons and large type on
+ *     the deep purple, never for text on white (1.3:1);
+ *   - pink is decoration (the sparkle, the underline of the current page) and
+ *     never text on a light surface (3.4:1); it passes as a graphic everywhere;
+ *   - white and the pale lavender on the hero clear 7:1 on all of deep, beam and
+ *     pool, so the hero's art can sit behind its words.
+ * Light and dark follow the OS via prefers-color-scheme; there is no toggle,
+ * the same way the app itself has none (app/README.md, "Design system").
+ */
+
+:root {
+  /* The brand, the same in both schemes. */
+  --deep: #2b0b5e;
+  --beam: #4a1c88;
+  --pool: #5e2ca5;
+  --spot: #ffe14d;
+  --spark: #ff3d7f;
+
+  /* Light scheme. */
+  --bg: #fbf9ff;
+  --bg-raised: #ffffff;
+  --text: #1c1033;
+  --text-muted: #4f4470;
+  --heading: var(--deep);
+  --border: #ddd2f0;
+  --link: var(--pool);
+  --link-hover: var(--deep);
+  --code-bg: #f0eafa;
+  --button-bg: var(--deep);
+  --button-ink: var(--spot);
+  --button-hover-bg: var(--beam);
+  --banner-bg: #fff3b0;
+  --banner-border: #b89b00;
+  --banner-text: #3b3000;
+  --focus-ring: var(--deep);
+  --logo-ring: transparent;
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #150729;
+    --bg-raised: #21103f;
+    --text: #f5f1ff;
+    --text-muted: #cbc0e6;
+    --heading: #ffffff;
+    --border: #3b2765;
+    --link: var(--spot);
+    --link-hover: #ffffff;
+    --code-bg: #2a1650;
+    --button-bg: var(--spot);
+    --button-ink: var(--deep);
+    --button-hover-bg: #fff2a3;
+    --banner-bg: #4a3300;
+    --banner-border: #ffb020;
+    --banner-text: #ffe1ac;
+    --focus-ring: var(--spot);
+    /* The logo's own plate is the deep purple, nearly the page's colour here. */
+    --logo-ring: rgba(255, 255, 255, 0.22);
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.55;
+  font-size: 1.0625rem;
+}
+
+::selection {
+  background: var(--spot);
+  color: var(--deep);
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  background: var(--bg-raised);
+  color: var(--text);
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--pool);
+  border-radius: 0.5rem;
+  z-index: 100;
+}
+
+.skip-link:focus {
+  left: 1rem;
+  top: 1rem;
+}
+
+a {
+  color: var(--link);
+  text-underline-offset: 0.15em;
+}
+
+a:hover,
+a:focus {
+  color: var(--link-hover);
+  text-decoration-thickness: 2px;
+}
+
+/* Long unbroken strings in links wrap instead of pushing the page sideways on a
+   narrow phone: the Terms write out Apple's standard EULA by its full URL, and
+   the privacy page's processors table links the support address. */
+main a {
+  overflow-wrap: anywhere;
+}
+
+/* The same for long strings that are not links: the privacy page prints the
+   delete-account address in running text, and its longest unbroken piece does
+   not fit in a 265 px layout (a 280 px window that has lost 15 px to its
+   scrollbar). `break-word` only splits a word that cannot fit on a line of its
+   own, and unlike `anywhere` it does not change how wide a table column or grid
+   item is sized, so nothing else on a page moves. */
+main {
+  overflow-wrap: break-word;
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.site-header {
+  border-bottom: 1px solid var(--border);
+}
+
+.site-header__inner {
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: var(--heading);
+  text-decoration: none;
+}
+
+.brand:hover,
+.brand:focus {
+  color: var(--heading);
+}
+
+/* The "Spotlight g" icon, site/img/favicon.svg. Its rounded plate is part of the
+   picture; the radius here (22.4% of the side, the plate's own) only makes the
+   ring follow the plate's corners. The ring shows in the dark scheme alone,
+   where the plate is close to the page's colour. */
+.brand__logo {
+  display: block;
+  flex: none;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.45rem;
+  box-shadow: 0 0 0 1px var(--logo-ring);
+}
+
+nav.site-nav ul {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  margin: 0;
+  padding: 0;
+}
+
+nav.site-nav a {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+nav.site-nav a:hover,
+nav.site-nav a:focus,
+nav.site-nav a[aria-current="page"] {
+  color: var(--text);
+  text-decoration: underline;
+  text-decoration-color: var(--spark);
+  text-decoration-thickness: 3px;
+  text-underline-offset: 0.35em;
+}
+
+.lang-switch ul {
+  list-style: none;
+  display: flex;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  font-size: 0.9rem;
+}
+
+.lang-switch a[aria-current="true"] {
+  font-weight: 700;
+  color: var(--text);
+  text-decoration: none;
+}
+
+main {
+  max-width: 42rem;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+
+main.wide {
+  max-width: 60rem;
+}
+
+/* The hero: the icon's stage, drawn in CSS so there is nothing to download. The
+   deep field, the beam from the lamp at the upper left, the pool of light on the
+   floor, and a pink sparkle. White and the pale lavender below clear 7:1 on all
+   three purples, so any of it can sit behind the words. The pink and the yellow
+   do not, so the lamp sits in the padding above the heading and the sparkle is
+   only drawn from 56 rem up, where the heading (44 rem at most) cannot reach it.
+   The beam's tip is in rem, not per cent, so the lamp stays on it at any width. */
+.hero {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--deep);
+  color: #ffffff;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--beam);
+  clip-path: polygon(0.5rem 3.4rem, 3.2rem 0.6rem, 100% 62%, 100% 100%, 22% 100%);
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(
+    ellipse 70% 5% at 64% 100%,
+    var(--pool) 97%,
+    transparent 100%
+  );
+}
+
+.hero__inner {
+  position: relative;
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: 3.5rem 1.5rem 3rem;
+}
+
+.hero h1 {
+  max-width: 44rem;
+  font-size: clamp(1.9rem, 4vw, 2.75rem);
+  margin: 0 0 0.75rem;
+  line-height: 1.15;
+  color: #ffffff;
+}
+
+.hero p {
+  font-size: 1.15rem;
+  max-width: 38rem;
+  margin: 0 0 1.5rem;
+  color: #ffffff;
+  text-wrap: pretty;
+}
+
+.hero .hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 0 0 1rem;
+}
+
+.hero .hero__note {
+  font-size: 0.95rem;
+  margin: 0;
+  color: #ebe3fb;
+}
+
+.hero a:focus-visible,
+.get-gigcall a:focus-visible {
+  outline-color: #ffffff;
+}
+
+/* On the hero and the closing panel the buttons are yellow on the deep purple. */
+.hero,
+.get-gigcall {
+  --button-bg: var(--spot);
+  --button-ink: var(--deep);
+  --button-hover-bg: #fff2a3;
+}
+
+.button {
+  display: inline-block;
+  padding: 0.8rem 1.6rem;
+  border-radius: 999px;
+  background: var(--button-bg);
+  color: var(--button-ink);
+  font-weight: 700;
+  line-height: 1.25;
+  text-align: center;
+  text-decoration: none;
+  border: 2px solid var(--button-bg);
+}
+
+.button:hover,
+.button:focus {
+  background: var(--button-hover-bg);
+  border-color: var(--button-hover-bg);
+  color: var(--button-ink);
+}
+
+/* The App Store call to action: a plain text button, deliberately not Apple's
+   badge artwork (which needs a download and has its own usage rules). */
+.button--store {
+  font-size: 1.1rem;
+  padding: 0.9rem 1.9rem;
+}
+
+.button--ghost {
+  background: transparent;
+  color: #ffffff;
+  border: 2px solid rgba(255, 255, 255, 0.7);
+}
+
+.button--ghost:hover,
+.button--ghost:focus {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: #ffffff;
+  color: #ffffff;
+}
+
+section {
+  margin: 2.5rem 0;
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1.25;
+  color: var(--heading);
+  /* Short headings break into even lines, so "load-in" is not split after its
+     hyphen and left with "in" on a line of its own. Where unsupported, headings
+     wrap as they always did. */
+  text-wrap: balance;
+}
+
+/* A short pink bar under the page title on the pages that have no hero: the
+   sparkle's colour, as a graphic (3.4:1 on white, 5.7:1 on the dark page). */
+main > h1::after {
+  content: "";
+  display: block;
+  width: 3rem;
+  height: 0.3rem;
+  margin-top: 0.6rem;
+  border-radius: 0.2rem;
+  background: var(--spark);
+}
+
+h2 {
+  font-size: 1.5rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.4rem;
+}
+
+h3 {
+  font-size: 1.15rem;
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 1.25rem;
+  padding: 0;
+  list-style: none;
+  margin: 1.5rem 0;
+}
+
+.feature-grid li {
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--pool);
+  border-radius: 0.75rem;
+  padding: 1.1rem 1.25rem;
+  background: var(--bg-raised);
+}
+
+.feature-grid h3 {
+  margin: 0 0 0.35rem;
+}
+
+.feature-grid p {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+/* The closing "Get Gigcall" panel on the landing page: the hero's deep purple
+   again, with the same yellow button. */
+.get-gigcall {
+  background: var(--deep);
+  color: #ffffff;
+  border: 1px solid var(--beam);
+  border-radius: 1rem;
+  padding: 1.5rem 1.75rem 1.75rem;
+}
+
+.get-gigcall h2 {
+  margin-top: 0;
+  color: #ffffff;
+  border-bottom-color: var(--beam);
+}
+
+.get-gigcall p {
+  color: #ffffff;
+  /* No single word left alone on the last line. */
+  text-wrap: pretty;
+}
+
+.get-gigcall p:last-child {
+  margin-bottom: 0;
+}
+
+.draft-banner {
+  background: var(--banner-bg);
+  border: 1px solid var(--banner-border);
+  color: var(--banner-text);
+  border-radius: 0.5rem;
+  padding: 0.85rem 1.1rem;
+  margin: 0 0 1.5rem;
+  font-size: 0.95rem;
+}
+
+.draft-banner strong {
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.card {
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 1.25rem 1.5rem;
+  background: var(--bg-raised);
+  margin: 1.25rem 0;
+}
+
+code,
+pre {
+  background: var(--code-bg);
+  border-radius: 0.35rem;
+}
+
+code {
+  padding: 0.1rem 0.35rem;
+  font-size: 0.9em;
+}
+
+dl.faq dt {
+  font-weight: 700;
+  margin-top: 1.25rem;
+}
+
+dl.faq dd {
+  margin: 0.35rem 0 0;
+  color: var(--text-muted);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 0.5rem 0.6rem;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+
+footer.site-footer {
+  border-top: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+footer.site-footer .site-footer__inner {
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 2rem;
+  justify-content: space-between;
+}
+
+footer.site-footer a {
+  color: var(--text-muted);
+}
+
+footer.site-footer a:hover,
+footer.site-footer a:focus {
+  color: var(--text);
+}
+
+footer.site-footer ul {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+}
+
+/* Wide enough for the lamp at the beam's tip, in the padding above the heading,
+   and for the pool of light on the floor to sit clear of the buttons. A phone
+   gets the beam and a sliver of the pool, which sit behind the words safely. */
+@media (min-width: 48rem) {
+  .hero::after {
+    background:
+      radial-gradient(circle 0.9rem at 1.85rem 2rem, var(--spot) 90%, transparent 100%),
+      radial-gradient(ellipse 20% 6% at 74% 90%, var(--pool) 97%, transparent 100%);
+  }
+}
+
+/* The pink four-point sparkle, the icon's own shape, at the right-hand edge of
+   the hero's content column. */
+@media (min-width: 56rem) {
+  .hero__inner::before {
+    content: "";
+    position: absolute;
+    top: 2.25rem;
+    right: 1.5rem;
+    width: 4.5rem;
+    height: 4.5rem;
+    background: var(--spark);
+    clip-path: polygon(
+      50% 0,
+      63.2% 36.8%,
+      100% 50%,
+      63.2% 63.2%,
+      50% 100%,
+      36.8% 63.2%,
+      0 50%,
+      36.8% 36.8%
+    );
+  }
+}
+
+@media (max-width: 30rem) {
+  .hero__inner {
+    padding: 2.5rem 1.25rem 2rem;
+  }
+
+  /* Both hero buttons take a full line each, so the App Store button is the
+     biggest thing on a phone's first screen and easy to hit with a thumb. */
+  .hero .hero__actions .button {
+    flex: 1 1 100%;
+  }
+
+  .get-gigcall {
+    padding: 1.25rem 1.25rem 1.5rem;
+  }
+
+  .get-gigcall .button {
+    display: block;
+  }
+
+  /* Room for "Download on the App Store" on one line in the closing panel, which
+     is narrower than the hero. */
+  .button--store {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+/* Narrow phones: stack each table row (label, then description) instead of
+   laying it out as two columns. A table cannot be narrower than its longest
+   words, and two columns of long words add up to nearly 300 px in the French
+   privacy page: more than a 280 px phone, or a 320 px window that has lost 15 px
+   to its scrollbar, can show without scrolling sideways (WCAG 1.4.10, reflow at
+   320 px). Letting the cells break words anywhere does not fix it: their
+   minimum widths become tiny, the table shares its width out by text length,
+   and the first column is squeezed to a sliver with words split mid-way, at
+   every viewport width. Stacked rows keep every word whole and cannot overflow.
+   22.5rem leaves room for wider fonts, and being rem it follows the reader's
+   text size. */
+@media (max-width: 22.5rem) {
+  main table,
+  main thead,
+  main tbody,
+  main tr,
+  main th,
+  main td {
+    display: block;
+  }
+
+  /* The header row only names the two columns, which are gone: keep it for
+     assistive technology and take it off the screen. */
+  main thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  main tr {
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  main td {
+    padding: 0;
+    border-bottom: 0;
+  }
+
+  main td:first-child {
+    font-weight: 600;
+    margin-bottom: 0.15rem;
+  }
+}
